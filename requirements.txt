@@ -1,0 +1,20 @@
+flask
+flask-cors
+flask-migrate
+flask-jwt-extended
+flask-sqlalchemy
+psycopg2-binary
+marshmallow # pydantic
+pyyaml
+gunicorn
+pytest
+python-dotenv
+
+# sqlalchemy
+# alembic
+# loguru
+# pyjwt
+# WTForms
+# flask_wtf - WTForms для фласка
+# flask_login
+# flask-restx

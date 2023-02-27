@@ -1,0 +1,8 @@
+flask:
+  # https://flask-jwt-extended.readthedocs.io/en/stable/options/
+  JWT_ALGORITHM: HS256
+  JWT_ACCESS_TOKEN_EXPIRES: 900 # 15 minutes
+  JWT_REFRESH_TOKEN_EXPIRES: 2592000 # 30 days
+  JWT_SESSION_COOKIE: False
+  JWT_ACCESS_COOKIE_PATH: /
+  JWT_REFRESH_COOKIE_PATH: /api/auth
