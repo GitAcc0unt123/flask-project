@@ -1,7 +1,6 @@
 import yaml
 import os
 
-# marshmallow ?
 from dotenv import load_dotenv
 
 

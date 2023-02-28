@@ -26,7 +26,6 @@ address {
 .overlay {
     height: 100%;
     width: 100%;
-    /*display: none;*/ /*v-show*/
     position: fixed;
     z-index: 1;
     top: 0;
@@ -55,7 +54,6 @@ address {
     cursor: pointer;
     color: #fff;
     display: none;
-    /*pointer-events: none;*/
 }
 
 .password-container{

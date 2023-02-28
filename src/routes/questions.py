@@ -16,7 +16,7 @@ question_bp = Blueprint('question', __name__)
 @question_bp.route('', methods=['POST'])
 @jwt_required(locations=['cookies', 'headers'])
 def create_question():
-    input = request.json # BadRequest
+    input = request.json
     try:
         validated_input = QuestionSchema(exclude=['id']).load(input)
         question = Question(**validated_input)
@@ -40,18 +40,12 @@ def get_test_questions():
     user_id = get_jwt_identity()
     try:
         test_id = int(test_id)
-        # questions = Question.query.filter_by(test_id=test_id).all()
         stmt = select(Question).where(Question.test_id==test_id).order_by(Question.id)
         questions = db.session.execute(stmt).scalars().all()
     except Exception as err:
         logging.exception(err)
         raise BadRequest('invalid test_id param in query string')
     
-    # send true_answers if the test is completed. добавить в запрос выше
-    # completed_test = CompletedTest.query.filter(and_(
-    #     CompletedTest.test_id==test_id,
-    #     CompletedTest.user_id==user_id))\
-    #     .one_or_none()
     stmt = select(1).where(and_(
         CompletedTest.test_id==test_id,
         CompletedTest.user_id==user_id
@@ -90,7 +84,6 @@ def update_question(id):
         if validated_input == None or len(validated_input) == 0:
             raise BadRequest("empty input. fill at least one field")
 
-        #question = Question.query.filter(id = id).update(validated_input)
         question.update(validated_input)
         question.verified = True
         db.session.commit()

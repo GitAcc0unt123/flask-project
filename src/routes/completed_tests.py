@@ -21,11 +21,6 @@ def complete_test():
     try:
         validated_input = CompletedTestSchema(only=['test_id']).load(input)
 
-        # completed_test = CompletedTest.query\
-        # .filter(and_(
-        #         CompletedTest.test_id==validated_input['test_id'],
-        #         CompletedTest.user_id==user_id))\
-        # .one_or_none()
         stmt = select(CompletedTest).where(and_(
                 CompletedTest.test_id==validated_input['test_id'],
                 CompletedTest.user_id==user_id)

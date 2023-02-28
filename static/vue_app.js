@@ -93,9 +93,6 @@ const App = {
                         setTimeout(() => {
                             if (this.access_token === `Bearer ${json.access_token}`) {
                                 this.refreshToken()
-                                /*if (this.access_token === `Bearer ${json.access_token}`) {
-                                    this.access_token = null
-                                }*/
                             }
                         }, timeout)
                     })
@@ -160,7 +157,6 @@ const App = {
                         setTimeout(() => {
                             if (this.access_token === `Bearer ${json.access_token}`) {
                                 this.access_token = null
-                                //this.refreshToken()
                             }
                         }, timeout)
                     })
@@ -271,7 +267,6 @@ const App = {
                             style: question.true_answers && question.true_answers.includes(question.show_answers[j]) ? { color: "green" } : {}
                         }
                     }
-                    //if (question.answer_type === 'freeField') {}
                 }
                 return test
             })()

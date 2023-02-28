@@ -8,7 +8,7 @@ from src.routes import user_bp, test_bp, question_bp, question_answer_bp, comple
 
 def create_flask_app(config):
     app = Flask(__name__)
-    app.config.from_mapping(config) # from_file, from_object
+    app.config.from_mapping(config)
 
     app.register_blueprint(user_bp, url_prefix='/api/auth')
     app.register_blueprint(test_bp, url_prefix='/api/test')

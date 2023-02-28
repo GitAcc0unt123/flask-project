@@ -7,7 +7,6 @@ from src.models import Question, AnswerTypeEnum
 
 
 def test_route_question_get_uncompleted_test(client, app, db):
-    # sign in
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -48,7 +47,6 @@ def test_route_question_get_uncompleted_test(client, app, db):
     ]
 
 def test_route_question_get_completed_test(client, app, db):
-    # sign in
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -90,7 +88,6 @@ def test_route_question_get_completed_test(client, app, db):
     ]
 
 def test_route_question_get(client, app, db): # route одинаково работает для завершённого и незавершённого теста
-    # sign in
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -128,7 +125,6 @@ def test_route_question_get(client, app, db): # route одинаково раб�
     }
 
 def test_route_question_create(client, app, db):
-    # sign in
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -167,7 +163,6 @@ def test_route_question_create(client, app, db):
         assert question.true_answers == question_info['true_answers']
 
 def test_route_question_update(client, app, db):
-    # sign in
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -209,7 +204,6 @@ def test_route_question_update(client, app, db):
         assert question.true_answers == update_question_info['true_answers']
 
 def test_route_question_delete(client, app, db):
-    # sign in
     create_user(app, db)
     credentials = {
         'username': 'username123',

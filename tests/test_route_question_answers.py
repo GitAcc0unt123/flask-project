@@ -7,7 +7,6 @@ from src.models import QuestionAnswer, AnswerTypeEnum
 
 
 def test_route_get_question_answers(client, app, db):
-    # sign in
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -55,7 +54,6 @@ def test_route_get_question_answers(client, app, db):
 
 
 def test_route_question_answers_CREATE_or_update(client, app, db):
-    # sign in
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -92,7 +90,6 @@ def test_route_question_answers_CREATE_or_update(client, app, db):
         assert question_answer.answer == ['1703']
 
 def test_route_question_answers_create_or_UPDATE(client, app, db):
-    # sign in
     create_user(app, db)
     credentials = {
         'username': 'username123',

@@ -11,7 +11,6 @@ from sqlalchemy import select, insert, update, exists, delete
 from src.models import User, db
 from src.schemas import SignInSchema, SignUpSchema
 
-# https://flask-jwt-extended.readthedocs.io/en/stable/token_locations/
 
 user_bp = Blueprint('user', __name__)
 
@@ -40,24 +39,21 @@ def user_sign_in():
     set_refresh_cookies(response, ret['refresh_token'])
     return (response, 200)
 
-# todo
+
 @user_bp.route('/sign-up', methods=['POST'])
 def user_sign_up():
-    input_json = request.json # BadRequest
+    input_json = request.json
     try:
-        # errors = SignUpSchema().validate(input_json) # Validation Without Deserialization
         validated_input = SignUpSchema().load(input_json)
         user = User(**validated_input)
-        #db.session.add(user)
-        #db.session.commit()
         stmt = insert(User).values(
             username=user.username,
             password_hash=user.password_hash,
             name=user.name,
             email=user.email
-        ).returning(User.id) #.inline()
+        ).returning(User.id)
         with db.engine.connect() as conn:
-            id = conn.execute(stmt).scalar_one_or_none() # .fetchone()
+            id = conn.execute(stmt).scalar_one_or_none()
             conn.commit()
             return ({ 'id': id }, 201)
     except ValidationError as err:
@@ -65,8 +61,6 @@ def user_sign_up():
     except Exception as err:
         logging.exception(type(err))
         raise InternalServerError()
-    #else:
-        # conn.commit()
 
 
 @user_bp.route('/refresh-token', methods=['POST'])

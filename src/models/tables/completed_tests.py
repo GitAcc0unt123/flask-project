@@ -12,8 +12,3 @@ class CompletedTest(db.Model):
     def __init__(self, user_id: int, test_id: int):
         self.user_id = user_id
         self.test_id = test_id
-
-    # __table_args__ = (
-    #     PrimaryKeyConstraint(field2, field1),
-    #     {},
-    # )

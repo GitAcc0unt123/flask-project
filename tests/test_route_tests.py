@@ -23,7 +23,6 @@ def test_route_test_get_all(client, app, db):
     ]
 
 def test_route_test_get(client, app, db):
-    # sign in
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -54,7 +53,6 @@ def test_route_test_get(client, app, db):
     }
 
 def test_route_test_create(client, app, db):
-    # sign in
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -87,7 +85,6 @@ def test_route_test_create(client, app, db):
         assert test.end == datetime(2000, 1, 13, 0, 0)
 
 def test_route_test_update(client, app, db):
-    # sign in
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -126,7 +123,6 @@ def test_route_test_update(client, app, db):
         assert test.end == datetime(2000, 1, 11, 0, 0)
 
 def test_route_test_delete(client, app, db):
-    # sign in
     create_user(app, db)
     credentials = {
         'username': 'username123',

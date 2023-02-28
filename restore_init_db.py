@@ -1,13 +1,5 @@
 from datetime import datetime
 
-from flask_migrate import Migrate, init, migrate, upgrade
-# init -
-# migrate - generate an initial migration
-# upgrade - apply the migration to the database
-# $ flask db init/migrate/upgrade
-# Each time the database models change repeat the migrate and upgrade commands
-# https://github.com/miguelgrinberg/flask-migrate
-
 from src.utils.config import Config
 from src.models import db, User, Test, Question
 from src.models.tables.questions import AnswerTypeEnum

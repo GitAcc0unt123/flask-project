@@ -8,12 +8,8 @@ from src.utils.config import Config
 from src.models import db as test_db
 from src.models import User, Test, Question, QuestionAnswer, AnswerTypeEnum, CompletedTest
 
-# flask.palletsprojects.com/en/latest/testing/
-# docker run --rm --name=test_db -e POSTGRES_DB=test -e POSTGRES_USER=username -e POSTGRES_PASSWORD=qwerty123 -p 6001:5432 postgres:15 postgres -c log_statement=all
-# $ pytest
 
-
-@pytest.fixture(scope="session") # function, class, module, package, session
+@pytest.fixture(scope="session")
 def app():
     print('app')
     config = Config('config.yaml', '.env')
@@ -21,8 +17,6 @@ def app():
     config.flask['TESTING'] = True
     app = create_flask_app(config.flask)
     yield app
-    # clean up / reset resources here
-    pass
 
 
 @pytest.fixture(scope="function")

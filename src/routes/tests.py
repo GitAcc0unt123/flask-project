@@ -1,15 +1,13 @@
 import logging
 
-from flask import Blueprint, Response, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask import Blueprint, Response, request
+from flask_jwt_extended import jwt_required
 from werkzeug.exceptions import BadRequest, InternalServerError
 from marshmallow import ValidationError
 from sqlalchemy import select, insert, update
 
 from src.models import Test, db
 from src.schemas import TestSchema
-
-# https://docs.sqlalchemy.org/en/20/changelog/migration_20.html#migration-20-query-usage
 
 test_bp = Blueprint('test', __name__)
 
@@ -32,9 +30,6 @@ def create_test():
     input = request.json
     try:
         validated_input = TestSchema(exclude=['id']).load(input)
-        # test = Test(**validated_input)
-        # db.session.add(test)
-        # db.session.commit()
         with db.engine.connect() as conn:
             stmt = insert(Test).values(**validated_input).returning(Test.id)
             id = conn.execute(stmt).scalar_one_or_none()

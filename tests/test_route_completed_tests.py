@@ -7,7 +7,6 @@ from src.models import CompletedTest
 
 
 def test_route_complete_test(client, app, db):
-    # sign in
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -41,7 +40,6 @@ def test_route_complete_test(client, app, db):
 
 
 def test_route_complete_test_exist(client, app, db):
-    # sign in
     create_user(app, db)
     credentials = {
         'username': 'username123',

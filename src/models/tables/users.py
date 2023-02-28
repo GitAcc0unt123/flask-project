@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-# RFC 8018 published in 2017, recommends PBKDF2 for password hashing
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, create_refresh_token
 
@@ -17,7 +16,7 @@ class User(db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     name = db.Column(db.String(255), nullable=False, default="")
     email = db.Column(db.String(255), nullable=False, unique=True)
-    created_at = db.Column(db.DateTime, nullable=False, default=func.now()) # datetime.datetime.utcnow
+    created_at = db.Column(db.DateTime, nullable=False, default=func.now())
     activated_at = db.Column(db.DateTime, nullable=True)
 
 
@@ -28,7 +27,7 @@ class User(db.Model):
         self.email = email
 
     def create_access_token(self) -> str:
-        access_token = create_access_token(identity=self.id)#, additional_claims=additional_claims)
+        access_token = create_access_token(identity=self.id)
         return access_token
     
     def create_refresh_token(self) -> str:

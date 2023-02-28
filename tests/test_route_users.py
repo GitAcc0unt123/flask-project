@@ -11,7 +11,7 @@ def test_route_sign_up(client, app, db):
     }
 
     response = client.post('/api/auth/sign-up', json=user_info)
-    assert response.status_code == 201 # response.headers
+    assert response.status_code == 201
     assert response.get_json() == {"id": 1}
 
     with app.app_context():
@@ -33,9 +33,3 @@ def test_route_sign_in(client, app, db):
     response = client.post('/api/auth/sign-in', json=credentials)
     assert response.status_code == 200
     assert list(response.get_json().keys()) == ['access_token', 'refresh_token']
-
-# def test_route_refresh_access_token(client):
-#     assert True
-
-# def test_route_logout(client):
-#     assert True

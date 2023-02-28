@@ -36,13 +36,6 @@ def get_question_answers():
         raise BadRequest('incorrect test_id')
     
     try:
-        # question_answers = db.session.query(QuestionAnswer).where(
-        #     and_(
-        #         QuestionAnswer.user_id == user_id,
-        #         QuestionAnswer.question_id.in_(
-        #             db.session(Question.id).filter(Question.test_id==test_id)
-        #         )
-        #     ))
         stmt = select(QuestionAnswer).where(
                 and_(
                     QuestionAnswer.user_id == user_id,

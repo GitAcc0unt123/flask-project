@@ -7,7 +7,7 @@ from src.models.database import db
 
 class Test(db.Model):
     __tablename__ = 'tests'
-    id = db.Column(db.Integer, primary_key=True) # autoincrement=True
+    id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False, unique=True)
     description = db.Column(db.Text, nullable=False, unique=False, default="")
     start = db.Column(db.DateTime, nullable=False)
@@ -31,6 +31,3 @@ class Test(db.Model):
         if time == None or self.start == None or time <= self.start:
             raise ValueError("failed end time validation")
         return time
-
-    #def __repr__(self):
-    #    return f"<test {self.title}>"

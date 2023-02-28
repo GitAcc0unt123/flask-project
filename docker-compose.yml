@@ -3,10 +3,7 @@ version: "3.9"
 services:
   tests_app:
     build: .
-#    command: "flask run --host=0.0.0.0 --port=5000"
     command: "gunicorn -w 4 --bind 0.0.0.0:5000 wsgi"
-#    ports:
-#      - 5000
     environment:
       - SQLALCHEMY_DATABASE_URI=${SQLALCHEMY_DATABASE_URI}
       - SECRET_KEY=${SECRET_KEY}
@@ -17,15 +14,13 @@ services:
       - database
   database:
     image: postgres:15-alpine
-    command: ["postgres", "-c", "log_statement=all"] # dev
+    command: ["postgres", "-c", "log_statement=all"]
     ports:
       - 5432:5432
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-#    volumes:
-#      - ../postgres_flask:/var/lib/postgresql/data
   nginx:
     build:
       context: .
@@ -33,11 +28,5 @@ services:
     ports:
       - 80:80
       - 443:443
-#    volumes:
-#      - ./nginx.conf:/etc/nginx/nginx.conf
-#      - ./static:/var/www/html/static
     depends_on:
       - tests_app
-
-#volumes:
-#  static_data:

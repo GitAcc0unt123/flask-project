@@ -18,7 +18,7 @@ class Question(db.Model):
     show_answers = db.Column(db.ARRAY(db.String), nullable=False)
     true_answers = db.Column(db.ARRAY(db.String), nullable=False)
 
-    test = db.relationship("Test", back_populates="questions") # backref, uselist, cascade
+    test = db.relationship("Test", back_populates="questions")
 
     def __init__(self, test_id: int, text: str, answer_type: AnswerTypeEnum, show_answers: List[str], true_answers: List[str]):
         self.test_id = test_id
