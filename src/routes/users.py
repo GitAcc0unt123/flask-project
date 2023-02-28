@@ -27,7 +27,7 @@ def user_sign_in():
         raise InternalServerError()
 
     user = User.authenticate(**validated_input)
-    if user == None:
+    if user is None:
         raise BadRequest(description='Invalid username or password')
 
     ret = {

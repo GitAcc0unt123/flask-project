@@ -16,9 +16,9 @@ def test_route_sign_up(client, app, db):
 
     with app.app_context():
         user = db.get_or_404(User, 1)
-        assert user != None
+        assert user is not None
         assert user.username == user_info['username']
-        assert user.password_hash != None
+        assert user.password_hash is not None
         assert user.name == user_info['name']
         assert user.email == user_info['email']
 

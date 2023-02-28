@@ -27,7 +27,7 @@ def complete_test():
         )
         completed_test = db.session.execute(stmt).scalar_one_or_none()
 
-        if completed_test == None:
+        if completed_test is None:
             completed_test = CompletedTest(**validated_input, user_id=user_id)
             db.session.add(completed_test)
             db.session.commit()

@@ -12,7 +12,7 @@ class Config():
 
         self.flask = config['flask']
 
-        if path_env != None and os.path.exists(path_env):
+        if path_env is not None and os.path.exists(path_env):
             load_dotenv(path_env)
 
         self.flask['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']

@@ -80,11 +80,11 @@ def test_route_question_answers_CREATE_or_update(client, app, db):
     response = client.post('/api/question-answer', json=question_answer_info, headers=headers)
 
     assert response.status_code == 201
-    assert response.get_json() == None
+    assert response.get_json() is None
     with app.app_context():
         stmt = select(QuestionAnswer).where(and_(QuestionAnswer.user_id==1, QuestionAnswer.question_id==1))
         question_answer = db.session.execute(stmt).scalar_one_or_none()
-        assert question_answer != None
+        assert question_answer is not None
         assert question_answer.user_id == 1
         assert question_answer.question_id == 1
         assert question_answer.answer == ['1703']
@@ -112,7 +112,7 @@ def test_route_question_answers_create_or_UPDATE(client, app, db):
     with app.app_context():
         stmt = select(QuestionAnswer).where(and_(QuestionAnswer.user_id==1, QuestionAnswer.question_id==1))
         question_answer = db.session.execute(stmt).scalar_one_or_none()
-        assert question_answer != None
+        assert question_answer is not None
         assert question_answer.user_id == 1
         assert question_answer.question_id == 1
         assert question_answer.answer == ['1701']
@@ -124,12 +124,12 @@ def test_route_question_answers_create_or_UPDATE(client, app, db):
     response = client.post('/api/question-answer', json=question_answer_info, headers=headers)
 
     assert response.status_code == 201
-    assert response.get_json() == None
+    assert response.get_json() is None
 
     with app.app_context():
         stmt = select(QuestionAnswer).where(and_(QuestionAnswer.user_id==1, QuestionAnswer.question_id==1))
         question_answer = db.session.execute(stmt).scalar_one_or_none()
-        assert question_answer != None
+        assert question_answer is not None
         assert question_answer.user_id == 1
         assert question_answer.question_id == 1
         assert question_answer.answer == ['1703']

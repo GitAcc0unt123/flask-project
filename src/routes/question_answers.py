@@ -18,7 +18,7 @@ question_answer_bp = Blueprint('question_answer', __name__)
 def get_question_answers():
     user_id = get_jwt_identity()
     test_id = request.args.get('test_id')
-    if test_id == None:
+    if test_id is None:
         raise BadRequest('set test_id param in query string')
 
     try:
@@ -32,7 +32,7 @@ def get_question_answers():
         logging.exception(str(err))
         raise InternalServerError()
     
-    if test_id_exist == None:
+    if test_id_exist is None:
         raise BadRequest('incorrect test_id')
     
     try:
@@ -65,7 +65,7 @@ def create_or_update_question_answer():
                     QuestionAnswer.user_id==user_id))\
             .one_or_none()
 
-        if question_answer == None:
+        if question_answer is None:
             question_answer = QuestionAnswer(**validated_input, user_id=user_id)
             db.session.add(question_answer)
         else:

@@ -34,7 +34,7 @@ def create_question():
 @jwt_required(locations=['cookies', 'headers'])
 def get_test_questions():
     test_id = request.args.get('test_id')
-    if test_id == None:
+    if test_id is None:
         raise BadRequest('set test_id param in query string')
     
     user_id = get_jwt_identity()
@@ -53,7 +53,7 @@ def get_test_questions():
     completed_test = db.session.execute(stmt).scalar_one_or_none()
 
     try:
-        if completed_test == None:
+        if completed_test is None:
             result = QuestionSchema(exclude=['true_answers']).dump(questions, many=True)
         else:
             result = QuestionSchema().dump(questions, many=True)
@@ -81,7 +81,7 @@ def update_question(id):
     question = db.get_or_404(Question, id)
     try:
         validated_input = QuestionSchema(exclude=['id', 'test_id'], partial=True).load(input)
-        if validated_input == None or len(validated_input) == 0:
+        if validated_input is None or len(validated_input) == 0:
             raise BadRequest("empty input. fill at least one field")
 
         question.update(validated_input)

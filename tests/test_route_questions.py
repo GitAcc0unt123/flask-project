@@ -154,7 +154,7 @@ def test_route_question_create(client, app, db):
 
     with app.app_context():
         question = db.get_or_404(Question, 1)
-        assert question != None
+        assert question is not None
         assert question.id == 1
         assert question.test_id == 1
         assert question.text == question_info['text']
@@ -195,7 +195,7 @@ def test_route_question_update(client, app, db):
 
     with app.app_context():
         question = db.get_or_404(Question, 1)
-        assert question != None
+        assert question is not None
         assert question.id == 1
         assert question.test_id == 1
         assert question.text == update_question_info['text']
@@ -227,7 +227,7 @@ def test_route_question_delete(client, app, db):
     response = client.delete('/api/question/1', headers=headers)
 
     assert response.status_code == 204
-    assert response.get_json() == None
+    assert response.get_json() is None
     
     with app.app_context():
         questions = db.session.execute(select(Question).order_by(Question.id)).scalars().all()

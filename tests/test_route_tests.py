@@ -77,7 +77,7 @@ def test_route_test_create(client, app, db):
 
     with app.app_context():
         test = db.get_or_404(Test, 1)
-        assert test != None
+        assert test is not None
         assert test.id == 1
         assert test.title == test_info['title']
         assert test.description == ''
@@ -115,7 +115,7 @@ def test_route_test_update(client, app, db):
 
     with app.app_context():
         test = db.get_or_404(Test, 1)
-        assert test != None
+        assert test is not None
         assert test.id == 1
         assert test.title == update_test_info['title']
         assert test.description == 'description 11'
@@ -145,7 +145,7 @@ def test_route_test_delete(client, app, db):
     response = client.delete('/api/test/1', headers=headers)
 
     assert response.status_code == 204
-    assert response.get_json() == None
+    assert response.get_json() is None
     
     with app.app_context():
         tests = db.session.execute(select(Test).order_by(Test.id)).scalars().all()

@@ -40,6 +40,6 @@ class User(db.Model):
     @classmethod
     def authenticate(cls, username: str, password: str) -> User | None:
         user = User.query.filter_by(username=username).one_or_none()
-        if user == None or not user.check_password(password):
+        if user is None or not user.check_password(password):
             return None
         return user

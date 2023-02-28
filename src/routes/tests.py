@@ -65,7 +65,7 @@ def update_test(id):
         logging.exception(str(err))
         raise InternalServerError()
 
-    if validated_input == None or len(validated_input) == 0:
+    if validated_input is None or len(validated_input) == 0:
         raise BadRequest("empty input. fill at least one field")
 
     test = db.get_or_404(Test, id)

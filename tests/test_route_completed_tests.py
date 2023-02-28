@@ -28,15 +28,15 @@ def test_route_complete_test(client, app, db):
     response = client.post('/api/completed-test', json=completed_test_info, headers=headers)
 
     assert response.status_code == 201
-    assert response.get_json() == None
+    assert response.get_json() is None
 
     with app.app_context():
         stmt = select(CompletedTest).where(and_(CompletedTest.user_id==1, CompletedTest.test_id==1))
         completed_test = db.session.execute(stmt).scalar_one_or_none()
-        assert completed_test != None
+        assert completed_test is not None
         assert completed_test.user_id == 1
         assert completed_test.test_id == 1
-        assert completed_test.complete_time != None
+        assert completed_test.complete_time is not None
 
 
 def test_route_complete_test_exist(client, app, db):
@@ -59,10 +59,10 @@ def test_route_complete_test_exist(client, app, db):
     with app.app_context():
         stmt = select(CompletedTest).where(and_(CompletedTest.user_id==1, CompletedTest.test_id==1))
         completed_test = db.session.execute(stmt).scalar_one_or_none()
-        assert completed_test != None
+        assert completed_test is not None
         assert completed_test.user_id == 1
         assert completed_test.test_id == 1
-        assert completed_test.complete_time != None
+        assert completed_test.complete_time is not None
 
     completed_test_info = { 
         'test_id': 1,
@@ -70,7 +70,7 @@ def test_route_complete_test_exist(client, app, db):
     response = client.post('/api/completed-test', json=completed_test_info, headers=headers)
 
     assert response.status_code == 201
-    assert response.get_json() == None
+    assert response.get_json() is None
 
     with app.app_context():
         stmt = select(CompletedTest).where(and_(CompletedTest.user_id==1, CompletedTest.test_id==1))

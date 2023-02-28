@@ -28,6 +28,6 @@ class Test(db.Model):
 
     @validates("end")
     def validate_end(self, key, time):
-        if time == None or self.start == None or time <= self.start:
+        if time is None or self.start is None or time <= self.start:
             raise ValueError("failed end time validation")
         return time
