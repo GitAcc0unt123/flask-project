@@ -17,7 +17,6 @@ def get_all_tests():
     try:
         tests = db.session.execute(select(Test).order_by(Test.id)).scalars().all()
         result = TestSchema(only=['id', 'title', 'description']).dump(tests, many=True)
-        logging.error(tests)
         return result
     except Exception as err:
         logging.exception(str(err))
