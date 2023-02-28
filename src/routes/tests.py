@@ -4,7 +4,7 @@ from flask import Blueprint, Response, request
 from flask_jwt_extended import jwt_required
 from werkzeug.exceptions import BadRequest, InternalServerError
 from marshmallow import ValidationError
-from sqlalchemy import select, insert, update
+from sqlalchemy import select, insert
 
 from src.models import Test, db
 from src.schemas import TestSchema

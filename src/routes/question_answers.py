@@ -4,7 +4,7 @@ from flask import Blueprint, Response, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.exceptions import BadRequest, InternalServerError
 from marshmallow import ValidationError
-from sqlalchemy import select, and_, exists
+from sqlalchemy import select, and_
 
 from src.models import QuestionAnswer, Question, Test, db
 from src.schemas import QuestionAnswerSchema

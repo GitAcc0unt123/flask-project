@@ -5,7 +5,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity, set_access_cookie
     set_refresh_cookies, unset_jwt_cookies
 from werkzeug.exceptions import BadRequest, InternalServerError
 from marshmallow import ValidationError
-from sqlalchemy import select, insert, update, exists, delete
+from sqlalchemy import select, insert
 
 
 from src.models import User, db
