@@ -7,7 +7,6 @@ from werkzeug.exceptions import BadRequest, InternalServerError
 from marshmallow import ValidationError
 from sqlalchemy import select, insert
 
-
 from src.models import User, db
 from src.schemas import SignInSchema, SignUpSchema
 

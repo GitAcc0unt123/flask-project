@@ -1,26 +1,31 @@
 from datetime import datetime
-from typing import List
+from typing import List, TYPE_CHECKING
 
 import pytest
 
 from src import create_flask_app
 from src.utils.config import Config
 from src.models import db as test_db
-from src.models import User, Test, Question, QuestionAnswer, AnswerTypeEnum, CompletedTest
+from src.models import User, Test, Question, QuestionAnswer, CompletedTest
+
+if TYPE_CHECKING:
+    from flask import Flask
+    from flask.testing import FlaskClient
+    from flask_sqlalchemy import SQLAlchemy
+    from src.models import AnswerTypeEnum
 
 
 @pytest.fixture(scope="session")
-def app():
-    print('app')
+def app() -> 'Flask':
     config = Config('config.yaml', '.env')
     config.flask['SQLALCHEMY_DATABASE_URI'] = config.flask['SQLALCHEMY_TEST_DATABASE_URI']
     config.flask['TESTING'] = True
     app = create_flask_app(config.flask)
-    yield app
+    return app
 
 
 @pytest.fixture(scope="function")
-def db(app):
+def db(app) -> 'SQLAlchemy':
     with app.app_context():
         test_db.drop_all()
         test_db.create_all()
@@ -28,7 +33,7 @@ def db(app):
 
 
 @pytest.fixture(scope="function")
-def client(app):
+def client(app) -> 'FlaskClient':
     return app.test_client()
 
 
@@ -38,7 +43,6 @@ def create_user(app, db,
                      name: str ='name example',
                      email: str ='example@mail.com'
 ) -> None:
-    print('create_user')
     with app.app_context():
         user = User(username, password, name, email)
         db.session.add(user)
@@ -51,7 +55,6 @@ def create_test(app, db,
                 start: datetime, 
                 end: datetime
 ) -> None:
-    print('create_test')
     with app.app_context():
         test = Test(title, description, start, end)
         db.session.add(test)
@@ -61,11 +64,10 @@ def create_test(app, db,
 def create_question(app, db,
                     test_id: int,
                     text: str,
-                    answer_type: AnswerTypeEnum,
+                    answer_type: 'AnswerTypeEnum',
                     show_answers: List[str],
                     true_answers: List[str]
 ) -> None:
-    print('create_question')
     with app.app_context():
         question = Question(test_id, text, answer_type, show_answers, true_answers)
         db.session.add(question)
@@ -77,7 +79,6 @@ def create_question_answer(app, db,
                            question_id: int,
                            answer: List[str]
 ) -> None:
-    print('create_question_answer')
     with app.app_context():
         question_answer = QuestionAnswer(user_id, question_id, answer)
         db.session.add(question_answer)
@@ -85,7 +86,6 @@ def create_question_answer(app, db,
 
 
 def create_completed_test(app, db, user_id: int, test_id: int) -> None:
-    print('create_completed_test')
     with app.app_context():
         completed_test = CompletedTest(user_id, test_id)
         db.session.add(completed_test)

@@ -20,7 +20,13 @@ class Question(db.Model):
 
     test = db.relationship("Test", back_populates="questions")
 
-    def __init__(self, test_id: int, text: str, answer_type: AnswerTypeEnum, show_answers: List[str], true_answers: List[str]):
+    def __init__(self,
+                 test_id: int,
+                 text: str,
+                 answer_type: AnswerTypeEnum,
+                 show_answers: List[str],
+                 true_answers: List[str]
+    ):
         self.test_id = test_id
         self.text = text
         self.answer_type = answer_type

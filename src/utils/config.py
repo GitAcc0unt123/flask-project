@@ -1,12 +1,14 @@
 import yaml
 import os
+from typing import Optional
 
 from dotenv import load_dotenv
 
 
 class Config():
-    def __init__(self, path_yaml, path_env=None):
+    flask: dict
 
+    def __init__(self, path_yaml: str, path_env: Optional[str] = None):
         with open(path_yaml, 'r') as file:
             config = yaml.safe_load(file)
 

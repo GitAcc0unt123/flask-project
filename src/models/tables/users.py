@@ -1,8 +1,8 @@
 from __future__ import annotations
+from typing import Optional
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, create_refresh_token
-
 from sqlalchemy.sql import func
 
 from src.models.database import db
@@ -38,7 +38,7 @@ class User(db.Model):
         return check_password_hash(self.password_hash, password)
 
     @classmethod
-    def authenticate(cls, username: str, password: str) -> User | None:
+    def authenticate(cls, username: str, password: str) -> Optional[User]: # Optional[Self] in python 3.11
         user = User.query.filter_by(username=username).one_or_none()
         if user is None or not user.check_password(password):
             return None
