@@ -120,7 +120,7 @@ def test_route_question_get(client, app, db): # route одинаково раб�
         'id': 2,
         'test_id': 1,
         'text': 'question text2',
-        'answer_type': 'one_select',
+        'answer_type': AnswerTypeEnum.one_select.name,
         'show_answers': ['1', '2', '3']
     }
 
@@ -143,7 +143,7 @@ def test_route_question_create(client, app, db):
     question_info = { 
         'test_id': 1,
         'text': 'question text2',
-        'answer_type': 'one_select',
+        'answer_type': AnswerTypeEnum.one_select.name,
         'show_answers': ['1', '2', '3'],
         'true_answers': ['3']
     }
@@ -162,7 +162,7 @@ def test_route_question_create(client, app, db):
         assert question.show_answers == question_info['show_answers']
         assert question.true_answers == question_info['true_answers']
 
-def test_route_question_update(client, app, db):
+def test_route_question_update_text(client, app, db):
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -184,8 +184,7 @@ def test_route_question_update(client, app, db):
                 ['1703'])
     
     update_question_info = { 
-        'text': 'new description',
-        'true_answers': ['true answer']
+        'text': 'new description'
     }
 
     response = client.put('/api/question/1', json=update_question_info, headers=headers)
@@ -201,7 +200,90 @@ def test_route_question_update(client, app, db):
         assert question.text == update_question_info['text']
         assert question.answer_type == AnswerTypeEnum.free_field
         assert question.show_answers == []
-        assert question.true_answers == update_question_info['true_answers']
+        assert question.true_answers == ['1703']
+
+def test_route_question_update_answer_bad_request(client, app, db):
+    create_user(app, db)
+    credentials = {
+        'username': 'username123',
+        'password': 'password123'
+    }
+    response = client.post('/api/auth/sign-in', json=credentials)
+    token = response.get_json()['access_token']
+    headers = {
+        'cookie': f'access_token={token}'
+    }
+
+    create_test(app, db, 'title1', 'description 11',
+                datetime(2000,1,10,0,0,0),
+                datetime(2000,1,11,0,0,0))
+
+    create_question(app, db, 1, 'question text1',
+                AnswerTypeEnum.free_field,
+                [],
+                ['1703'])
+
+    update_question_info = {
+        'text': 'new description',
+        'answer_type': AnswerTypeEnum.one_select.name
+    }
+
+    response = client.put('/api/question/1', json=update_question_info, headers=headers)
+
+    assert response.status_code == 400
+
+    with app.app_context():
+        question = db.get_or_404(Question, 1)
+        assert question is not None
+        assert question.id == 1
+        assert question.test_id == 1
+        assert question.text == 'question text1'
+        assert question.answer_type == AnswerTypeEnum.free_field
+        assert question.show_answers == []
+        assert question.true_answers == ['1703']
+
+def test_route_question_update_answer(client, app, db):
+    create_user(app, db)
+    credentials = {
+        'username': 'username123',
+        'password': 'password123'
+    }
+    response = client.post('/api/auth/sign-in', json=credentials)
+    token = response.get_json()['access_token']
+    headers = {
+        'cookie': f'access_token={token}'
+    }
+
+    create_test(app, db, 'title1', 'description 11',
+                datetime(2000,1,10,0,0,0),
+                datetime(2000,1,11,0,0,0))
+
+    create_question(app, db, 1, 'question text1',
+                AnswerTypeEnum.free_field,
+                [],
+                ['1703'])
+
+    update_question_info = {
+        'text': 'new description',
+        'answer_type': AnswerTypeEnum.one_select.name,
+        'show_answers': ['2014', '2015', '2016'],
+        'true_answers': ['2016']
+    }
+
+    response = client.put('/api/question/1', json=update_question_info, headers=headers)
+
+    assert response.status_code == 200
+    assert response.get_json() == update_question_info
+
+    with app.app_context():
+        question = db.get_or_404(Question, 1)
+        assert question is not None
+        assert question.id == 1
+        assert question.test_id == 1
+        assert question.text == update_question_info['text']
+        assert question.answer_type == AnswerTypeEnum.one_select
+        assert question.show_answers == ['2014', '2015', '2016']
+        assert question.true_answers == ['2016']
 
 def test_route_question_delete(client, app, db):
     create_user(app, db)

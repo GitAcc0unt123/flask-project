@@ -18,7 +18,7 @@ question_bp = Blueprint('question', __name__)
 def create_question():
     input = request.json
     try:
-        validated_input = QuestionSchema(exclude=['id']).load(input)
+        validated_input = QuestionSchema().load(input)
         question = Question(**validated_input)
         db.session.add(question)
         db.session.commit()
@@ -80,7 +80,7 @@ def update_question(id):
     input = request.json
     question = db.get_or_404(Question, id)
     try:
-        validated_input = QuestionSchema(exclude=['id', 'test_id'], partial=True).load(input)
+        validated_input = QuestionSchema(exclude=['test_id'], partial=True).load(input)
         if validated_input is None or len(validated_input) == 0:
             raise BadRequest("empty input. fill at least one field")
 
@@ -88,6 +88,8 @@ def update_question(id):
         question.verified = True
         db.session.commit()
         return QuestionSchema(only=validated_input.keys()).dump(question)
+    except ValidationError as err:
+        raise BadRequest(err.messages)
     except Exception as err:
         logging.exception(err)
         raise InternalServerError()

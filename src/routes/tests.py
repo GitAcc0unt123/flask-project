@@ -28,7 +28,7 @@ def get_all_tests():
 def create_test():
     input = request.json
     try:
-        validated_input = TestSchema(exclude=['id']).load(input)
+        validated_input = TestSchema().load(input)
         with db.engine.connect() as conn:
             stmt = insert(Test).values(**validated_input).returning(Test.id)
             id = conn.execute(stmt).scalar_one_or_none()
@@ -57,7 +57,7 @@ def get_test_by_id(id):
 def update_test(id):
     input = request.json
     try:
-        validated_input = TestSchema(exclude=['id'], partial=True).load(input)
+        validated_input = TestSchema(partial=True).load(input)
     except ValidationError as err:
         raise BadRequest(err.messages)
     except Exception as err:

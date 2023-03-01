@@ -84,7 +84,7 @@ def test_route_test_create(client, app, db):
         assert test.start == datetime(2000, 1, 12, 0, 0)
         assert test.end == datetime(2000, 1, 13, 0, 0)
 
-def test_route_test_update(client, app, db):
+def test_route_test_update_title(client, app, db):
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -102,7 +102,6 @@ def test_route_test_update(client, app, db):
     
     update_test_info = { 
         'title': 'new title',
-        'start': '2010-01-12 00:00:00'
     }
 
     response = client.put('/api/test/1', json=update_test_info, headers=headers)
@@ -110,7 +109,6 @@ def test_route_test_update(client, app, db):
     assert response.status_code == 200
     assert response.get_json() == { 
         'title': 'new title',
-        'start': '2010-01-12T00:00:00'
     }
 
     with app.app_context():
@@ -119,8 +117,79 @@ def test_route_test_update(client, app, db):
         assert test.id == 1
         assert test.title == update_test_info['title']
         assert test.description == 'description 11'
-        assert test.start == datetime(2010, 1, 12, 0, 0)
+        assert test.start == datetime(2000, 1, 10, 0, 0)
         assert test.end == datetime(2000, 1, 11, 0, 0)
+
+def test_route_test_update_time_bad_request(client, app, db):
+    create_user(app, db)
+    credentials = {
+        'username': 'username123',
+        'password': 'password123'
+    }
+    response = client.post('/api/auth/sign-in', json=credentials)
+    token = response.get_json()['access_token']
+    headers = {
+        'cookie': f'access_token={token}'
+    }
+
+    create_test(app, db, 'title1', 'description 11',
+                datetime(2000,1,10,0,0,0),
+                datetime(2000,1,11,0,0,0))
+
+    update_test_info = {
+        'start': '2010-01-12 00:00:00'
+    }
+
+    response = client.put('/api/test/1', json=update_test_info, headers=headers)
+
+    assert response.status_code == 400
+
+    with app.app_context():
+        test = db.get_or_404(Test, 1)
+        assert test is not None
+        assert test.id == 1
+        assert test.title == 'title1'
+        assert test.description == 'description 11'
+        assert test.start == datetime(2000, 1, 10, 0, 0)
+        assert test.end == datetime(2000, 1, 11, 0, 0)
+
+def test_route_test_update_time(client, app, db):
+    create_user(app, db)
+    credentials = {
+        'username': 'username123',
+        'password': 'password123'
+    }
+    response = client.post('/api/auth/sign-in', json=credentials)
+    token = response.get_json()['access_token']
+    headers = {
+        'cookie': f'access_token={token}'
+    }
+
+    create_test(app, db, 'title1', 'description 11',
+                datetime(2000,1,10,0,0,0),
+                datetime(2000,1,11,0,0,0))
+
+    update_test_info = {
+        'start': '2010-01-10 00:00:00',
+        'end': '2010-01-12 00:00:00'
+    }
+
+    response = client.put('/api/test/1', json=update_test_info, headers=headers)
+
+    assert response.status_code == 200
+    assert response.get_json() == {
+        'start': '2010-01-10T00:00:00',
+        'end': '2010-01-12T00:00:00'
+    }
+
+    with app.app_context():
+        test = db.get_or_404(Test, 1)
+        assert test is not None
+        assert test.id == 1
+        assert test.title == 'title1'
+        assert test.description == 'description 11'
+        assert test.start == datetime(2010, 1, 10, 0, 0)
+        assert test.end == datetime(2010, 1, 12, 0, 0)
 
 def test_route_test_delete(client, app, db):
     create_user(app, db)
