@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, create_refresh_token
@@ -7,17 +7,20 @@ from sqlalchemy.sql import func
 
 from src.models.database import db
 
+if TYPE_CHECKING:
+    from datetime import datetime
+
 
 class User(db.Model):
     __tablename__ = 'users'
 
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(255), nullable=False, unique=True)
-    password_hash = db.Column(db.String(255), nullable=False)
-    name = db.Column(db.String(255), nullable=False, default="")
-    email = db.Column(db.String(255), nullable=False, unique=True)
-    created_at = db.Column(db.DateTime, nullable=False, default=func.now())
-    activated_at = db.Column(db.DateTime, nullable=True)
+    id: int = db.Column(db.Integer, primary_key=True)
+    username: str = db.Column(db.String(255), nullable=False, unique=True)
+    password_hash: str = db.Column(db.String(255), nullable=False)
+    name: str = db.Column(db.String(255), nullable=False, default="")
+    email: str = db.Column(db.String(255), nullable=False, unique=True)
+    created_at: Optional[datetime] = db.Column(db.DateTime, nullable=False, default=func.now())
+    activated_at: Optional[datetime] = db.Column(db.DateTime, nullable=True)
 
 
     def __init__(self, username: str, password: str, name: str, email: str):

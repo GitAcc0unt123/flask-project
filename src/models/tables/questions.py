@@ -11,12 +11,13 @@ class AnswerTypeEnum(Enum):
 
 class Question(db.Model):
     __tablename__ = 'questions'
-    id = db.Column(db.Integer, primary_key=True)
-    test_id = db.Column(db.Integer, db.ForeignKey('tests.id', ondelete="CASCADE"))
-    text = db.Column(db.String(255), nullable=False)
-    answer_type = db.Column(db.Enum(AnswerTypeEnum), nullable=False)
-    show_answers = db.Column(db.ARRAY(db.String), nullable=False)
-    true_answers = db.Column(db.ARRAY(db.String), nullable=False)
+
+    id: int = db.Column(db.Integer, primary_key=True)
+    test_id: int = db.Column(db.Integer, db.ForeignKey('tests.id', ondelete="CASCADE"))
+    text: str = db.Column(db.String(255), nullable=False)
+    answer_type: AnswerTypeEnum = db.Column(db.Enum(AnswerTypeEnum), nullable=False)
+    show_answers: List[str] = db.Column(db.ARRAY(db.String), nullable=False)
+    true_answers: List[str] = db.Column(db.ARRAY(db.String), nullable=False)
 
     test = db.relationship("Test", back_populates="questions")
 
@@ -33,7 +34,7 @@ class Question(db.Model):
         self.show_answers = show_answers
         self.true_answers = true_answers
 
-    def update(self, new: dict):
+    def update(self, new: dict) -> None:
         for key, value in new.items():
             if hasattr(self, key):
                 setattr(self, key, value)
