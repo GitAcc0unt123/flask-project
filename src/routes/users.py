@@ -15,7 +15,7 @@ user_bp = Blueprint('user', __name__)
 
 
 @user_bp.route('/sign-in', methods=['POST'])
-def user_sign_in():
+def sign_in():
     input = request.json
     try:
         validated_input = SignInSchema().load(input)
@@ -40,7 +40,7 @@ def user_sign_in():
 
 
 @user_bp.route('/sign-up', methods=['POST'])
-def user_sign_up():
+def sign_up():
     input_json = request.json
     try:
         validated_input = SignUpSchema().load(input_json)
@@ -62,7 +62,7 @@ def user_sign_up():
         raise InternalServerError()
 
 
-@user_bp.route('/refresh-token', methods=['POST'])
+@user_bp.route('/refresh-access-token', methods=['POST'])
 @jwt_required(refresh=True, locations=['cookies', 'headers'])
 def refresh_access_token():
     try:
@@ -81,7 +81,7 @@ def refresh_access_token():
 
 @user_bp.route("/sign-out", methods=["POST"])
 @jwt_required(refresh=True, locations=['cookies', 'headers'])
-def logout():
+def sign_out():
     response = jsonify({"message": "logout successful"})
     unset_jwt_cookies(response)
     return response

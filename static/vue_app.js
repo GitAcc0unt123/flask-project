@@ -36,7 +36,7 @@ const App = {
         .then(fp => fp.get())
         .then(result => {
             this.loginInfo.fingerprint = result.visitorId // result.components
-            this.refreshToken()
+            this.refreshAccessToken()
         })
         .catch(error => console.error(error))
 
@@ -77,8 +77,8 @@ const App = {
             return JSON.parse(jsonPayload)
         },
 
-        refreshToken() {
-            fetch('/api/auth/refresh-token', { method: 'POST' })
+        refreshAccessToken() {
+            fetch('/api/auth/refresh-access-token', { method: 'POST' })
             .then(response => {
                 if (response.ok)
                     response.json().then(json => {
@@ -92,7 +92,7 @@ const App = {
                         const timeout = (expiredAt - now - 3) * 1000
                         setTimeout(() => {
                             if (this.access_token === `Bearer ${json.access_token}`) {
-                                this.refreshToken()
+                                this.refreshAccessToken()
                             }
                         }, timeout)
                     })
