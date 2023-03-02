@@ -67,7 +67,7 @@ def sign_up():
 def refresh_access_token():
     try:
         user_id = get_jwt_identity()
-        user = db.session.execute(select(User).filter_by(id = user_id)).scalar_one()
+        user = db.session.execute(select(User).where(User.id == user_id)).scalar_one()
         ret = {
             'access_token': user.create_access_token(),
         }

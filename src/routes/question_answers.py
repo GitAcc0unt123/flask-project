@@ -57,11 +57,10 @@ def create_or_update_question_answer():
 
     try:
         validated_input = QuestionAnswerSchema(only=['question_id', 'answer']).load(input)
-        question_answer = QuestionAnswer.query\
-            .filter(and_(
+        stmt = select(QuestionAnswer).where(and_(
                     QuestionAnswer.question_id == validated_input['question_id'],
-                    QuestionAnswer.user_id == user_id))\
-            .one_or_none()
+                    QuestionAnswer.user_id == user_id))
+        question_answer = db.session.execute(stmt).scalar_one_or_none()
 
         if question_answer is None:
             question_answer = QuestionAnswer(**validated_input, user_id=user_id)

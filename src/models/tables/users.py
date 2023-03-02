@@ -3,7 +3,7 @@ from typing import Optional, TYPE_CHECKING
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, create_refresh_token
-from sqlalchemy.sql import func
+from sqlalchemy.sql import select, func
 
 from src.models.database import db
 
@@ -42,7 +42,7 @@ class User(db.Model):
 
     @classmethod
     def authenticate(cls, username: str, password: str) -> Optional[User]: # Optional[Self] in python 3.11
-        user = User.query.filter_by(username=username).one_or_none()
+        user = db.session.execute(select(User).where(User.username == username)).scalar_one_or_none()
         if user is None or not user.check_password(password):
             return None
         return user
