@@ -1,12 +1,18 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import select, and_
 
 from tests.conftest import create_test, create_user, create_completed_test
 from src.models import CompletedTest
 
+if TYPE_CHECKING:
+    from flask import Flask
+    from flask.testing import FlaskClient
+    from flask_sqlalchemy import SQLAlchemy
 
-def test_route_complete_test(client, app, db):
+
+def test_route_complete_test(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -39,7 +45,7 @@ def test_route_complete_test(client, app, db):
         assert completed_test.complete_time is not None
 
 
-def test_route_complete_test_exist(client, app, db):
+def test_route_complete_test_exist(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
     credentials = {
         'username': 'username123',

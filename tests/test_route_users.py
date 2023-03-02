@@ -1,8 +1,15 @@
+from typing import TYPE_CHECKING
+
 from tests.conftest import create_user
 from src.models import User
 
+if TYPE_CHECKING:
+    from flask import Flask
+    from flask.testing import FlaskClient
+    from flask_sqlalchemy import SQLAlchemy
 
-def test_route_sign_up(client, app, db):
+
+def test_route_auth_sign_up(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     user_info = {
         'username': 'username123',
         'password': 'password123',
@@ -23,7 +30,7 @@ def test_route_sign_up(client, app, db):
         assert user.email == user_info['email']
 
 
-def test_route_sign_in(client, app, db):
+def test_route_auth_sign_in(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
 
     credentials = {

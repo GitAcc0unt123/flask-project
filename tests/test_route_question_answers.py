@@ -1,12 +1,18 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import select, and_
 
 from tests.conftest import create_test, create_user, create_question, create_question_answer
 from src.models import QuestionAnswer, AnswerTypeEnum
 
+if TYPE_CHECKING:
+    from flask import Flask
+    from flask.testing import FlaskClient
+    from flask_sqlalchemy import SQLAlchemy
 
-def test_route_get_question_answers(client, app, db):
+
+def test_route_get_question_answers(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -52,8 +58,7 @@ def test_route_get_question_answers(client, app, db):
     assert response_json[1]['question_id'] == 3
     assert response_json[1]['answer'] == ['1', '2']
 
-
-def test_route_question_answers_CREATE_or_update(client, app, db):
+def test_route_question_answers_CREATE_or_update(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -89,7 +94,7 @@ def test_route_question_answers_CREATE_or_update(client, app, db):
         assert question_answer.question_id == 1
         assert question_answer.answer == ['1703']
 
-def test_route_question_answers_create_or_UPDATE(client, app, db):
+def test_route_question_answers_create_or_UPDATE(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
     credentials = {
         'username': 'username123',

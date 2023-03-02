@@ -25,7 +25,7 @@ def app() -> 'Flask':
 
 
 @pytest.fixture(scope="function")
-def db(app) -> 'SQLAlchemy':
+def db(app: 'Flask') -> 'SQLAlchemy':
     with app.app_context():
         test_db.drop_all()
         test_db.create_all()
@@ -33,7 +33,7 @@ def db(app) -> 'SQLAlchemy':
 
 
 @pytest.fixture(scope="function")
-def client(app) -> 'FlaskClient':
+def client(app: 'Flask') -> 'FlaskClient':
     return app.test_client()
 
 

@@ -1,12 +1,18 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import select
 
 from tests.conftest import create_test, create_user, create_question, create_completed_test
 from src.models import Question, AnswerTypeEnum
 
+if TYPE_CHECKING:
+    from flask import Flask
+    from flask.testing import FlaskClient
+    from flask_sqlalchemy import SQLAlchemy
 
-def test_route_question_get_uncompleted_test(client, app, db):
+
+def test_route_question_get_uncompleted_test(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -46,7 +52,7 @@ def test_route_question_get_uncompleted_test(client, app, db):
         { 'id': 2, 'test_id': 1, 'text': 'question text2', 'answer_type': 'one_select', 'show_answers': ['1', '2', '3'] }
     ]
 
-def test_route_question_get_completed_test(client, app, db):
+def test_route_question_get_completed_test(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -87,7 +93,7 @@ def test_route_question_get_completed_test(client, app, db):
         { 'id': 2, 'test_id': 1, 'text': 'question text2', 'answer_type': 'one_select', 'show_answers': ['1', '2', '3'], 'true_answers': ['3'] }
     ]
 
-def test_route_question_get(client, app, db): # route одинаково работает для завершённого и незавершённого теста
+def test_route_question_get(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -124,7 +130,7 @@ def test_route_question_get(client, app, db): # route одинаково раб�
         'show_answers': ['1', '2', '3']
     }
 
-def test_route_question_create(client, app, db):
+def test_route_question_create(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -162,7 +168,7 @@ def test_route_question_create(client, app, db):
         assert question.show_answers == question_info['show_answers']
         assert question.true_answers == question_info['true_answers']
 
-def test_route_question_update_text(client, app, db):
+def test_route_question_update_text(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -202,7 +208,7 @@ def test_route_question_update_text(client, app, db):
         assert question.show_answers == []
         assert question.true_answers == ['1703']
 
-def test_route_question_update_answer_bad_request(client, app, db):
+def test_route_question_update_answer_bad_request(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -242,7 +248,7 @@ def test_route_question_update_answer_bad_request(client, app, db):
         assert question.show_answers == []
         assert question.true_answers == ['1703']
 
-def test_route_question_update_answer(client, app, db):
+def test_route_question_update_answer(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -285,7 +291,7 @@ def test_route_question_update_answer(client, app, db):
         assert question.show_answers == ['2014', '2015', '2016']
         assert question.true_answers == ['2016']
 
-def test_route_question_delete(client, app, db):
+def test_route_question_delete(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
     credentials = {
         'username': 'username123',

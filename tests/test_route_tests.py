@@ -1,12 +1,18 @@
 from datetime import datetime, timedelta
+from typing import TYPE_CHECKING
 
 from sqlalchemy import select
 
 from tests.conftest import create_test, create_user
 from src.models import Test
 
+if TYPE_CHECKING:
+    from flask import Flask
+    from flask.testing import FlaskClient
+    from flask_sqlalchemy import SQLAlchemy
 
-def test_route_test_get_all(client, app, db):
+
+def test_route_test_get_all(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_test(app, db, 'title1', None,
                 datetime(2000,1,1,0,0,0) + timedelta(days=10),
                 datetime(2000,1,1,0,0,0) + timedelta(days=11))
@@ -22,7 +28,7 @@ def test_route_test_get_all(client, app, db):
         { 'id': 2, 'title': 'title2', 'description': 'description 123' }
     ]
 
-def test_route_test_get(client, app, db):
+def test_route_test_get(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -52,7 +58,7 @@ def test_route_test_get(client, app, db):
         'end': '2000-01-12T00:00:00'
     }
 
-def test_route_test_create(client, app, db):
+def test_route_test_create(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -84,7 +90,7 @@ def test_route_test_create(client, app, db):
         assert test.start == datetime(2000, 1, 12, 0, 0)
         assert test.end == datetime(2000, 1, 13, 0, 0)
 
-def test_route_test_update_title(client, app, db):
+def test_route_test_update_title(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -120,7 +126,7 @@ def test_route_test_update_title(client, app, db):
         assert test.start == datetime(2000, 1, 10, 0, 0)
         assert test.end == datetime(2000, 1, 11, 0, 0)
 
-def test_route_test_update_time_bad_request(client, app, db):
+def test_route_test_update_time_bad_request(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -153,7 +159,7 @@ def test_route_test_update_time_bad_request(client, app, db):
         assert test.start == datetime(2000, 1, 10, 0, 0)
         assert test.end == datetime(2000, 1, 11, 0, 0)
 
-def test_route_test_update_time(client, app, db):
+def test_route_test_update_time(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
     credentials = {
         'username': 'username123',
@@ -191,7 +197,7 @@ def test_route_test_update_time(client, app, db):
         assert test.start == datetime(2010, 1, 10, 0, 0)
         assert test.end == datetime(2010, 1, 12, 0, 0)
 
-def test_route_test_delete(client, app, db):
+def test_route_test_delete(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
     credentials = {
         'username': 'username123',
