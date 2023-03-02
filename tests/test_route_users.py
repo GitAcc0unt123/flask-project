@@ -40,3 +40,72 @@ def test_route_auth_sign_in(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy
     response = client.post('/api/auth/sign-in', json=credentials)
     assert response.status_code == 200
     assert list(response.get_json().keys()) == ['access_token', 'refresh_token']
+
+    cookies = [ cookie.name for cookie in client.cookie_jar ]
+    assert cookies == [ 'access_token_cookie', 'refresh_token_cookie' ]
+
+
+def test_route_refresh_access_token_cookie(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
+    with app.app_context():
+        user = User('username123', 'password123', 'name example', 'example@mail.com')
+        db.session.add(user)
+        db.session.commit()
+        refresh_token = user.create_refresh_token()
+
+    client.set_cookie('localhost/api/auth', 'refresh_token_cookie', refresh_token)
+    response = client.post('/api/auth/refresh-access-token')
+    assert response.status_code == 200
+    assert list(response.get_json().keys()) == ['access_token']
+    cookies = [ cookie.name for cookie in client.cookie_jar ]
+    assert cookies == [ 'access_token_cookie', 'refresh_token_cookie' ]
+    assert [ cookie.value for cookie in client.cookie_jar if cookie.name == 'refresh_token_cookie' ][0] == refresh_token
+
+
+def test_route_auth_refresh_access_token_headers(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
+    with app.app_context():
+        user = User('username123', 'password123', 'name example', 'example@mail.com')
+        db.session.add(user)
+        db.session.commit()
+        refresh_token = user.create_refresh_token()
+
+    headers = {
+        "Authorization": f"Bearer {refresh_token}"
+    }
+    response = client.post('/api/auth/refresh-access-token', headers=headers)
+    assert response.status_code == 200
+    assert list(response.get_json().keys()) == ['access_token']
+    cookies = [ cookie.name for cookie in client.cookie_jar ]
+    assert cookies == [ 'access_token_cookie' ]
+
+
+def test_route_auth_sign_out_cookie(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
+    with app.app_context():
+        user = User('username123', 'password123', 'name example', 'example@mail.com')
+        db.session.add(user)
+        db.session.commit()
+        refresh_token = user.create_refresh_token()
+
+    
+    client.set_cookie('/api/auth', 'refresh_token_cookie', refresh_token)
+    response = client.post('/api/auth/sign-out')
+    assert response.status_code == 200
+    assert response.get_json() == {"message": "logout successful"}
+    assert len(client.cookie_jar) == 1
+    assert list(client.cookie_jar)[0].name == 'refresh_token_cookie'
+    assert list(client.cookie_jar)[0].expires == None
+
+
+def test_route_auth_sign_out_headers(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
+    with app.app_context():
+        user = User('username123', 'password123', 'name example', 'example@mail.com')
+        db.session.add(user)
+        db.session.commit()
+        refresh_token = user.create_refresh_token()
+
+    headers = {
+        "Authorization": f"Bearer {refresh_token}"
+    }
+    response = client.post('/api/auth/sign-out', headers=headers)
+    assert response.status_code == 200
+    assert response.get_json() == {"message": "logout successful"}
+    assert len(client.cookie_jar) == 0
