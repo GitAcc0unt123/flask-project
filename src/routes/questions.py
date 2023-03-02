@@ -4,9 +4,9 @@ from flask import Blueprint, Response, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.exceptions import BadRequest, InternalServerError
 from marshmallow import ValidationError
-from sqlalchemy import select, and_
+from sqlalchemy import select, exists, and_
 
-from src.models import Question, CompletedTest, db
+from src.models import Question, CompletedTest, Test, db
 from src.schemas import QuestionSchema
 
 
@@ -36,23 +36,30 @@ def get_test_questions():
     test_id = request.args.get('test_id')
     if test_id is None:
         raise BadRequest('set test_id param in query string')
-    
-    user_id = get_jwt_identity()
-    try:
-        test_id = int(test_id)
-        stmt = select(Question).where(Question.test_id==test_id).order_by(Question.id)
-        questions = db.session.execute(stmt).scalars().all()
-    except Exception as err:
-        logging.exception(err)
-        raise BadRequest('invalid test_id param in query string')
-    
-    stmt = select(1).where(and_(
-        CompletedTest.test_id==test_id,
-        CompletedTest.user_id==user_id
-    ))
-    completed_test = db.session.execute(stmt).scalar_one_or_none()
 
     try:
+        user_id = get_jwt_identity()
+        test_id = int(test_id)
+        stmt = select(1).where(exists(1).where(Test.id == test_id))
+        test_exist = db.session.execute(stmt).scalar()
+    except ValueError as err:
+        raise BadRequest('invalid test_id param in query string')
+    except Exception as err:
+        logging.exception(err)
+        raise InternalServerError()
+
+    if test_exist is None:
+        raise BadRequest('invalid test_id param in query string')
+
+    try:
+        stmt = select(Question).where(Question.test_id == test_id).order_by(Question.id)
+        questions = db.session.execute(stmt).scalars().all()
+        stmt = select(1).where(and_(
+            CompletedTest.test_id == test_id,
+            CompletedTest.user_id == user_id
+        ))
+        completed_test = db.session.execute(stmt).scalar_one_or_none()
+
         if completed_test is None:
             result = QuestionSchema(exclude=['true_answers']).dump(questions, many=True)
         else:

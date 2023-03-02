@@ -12,6 +12,84 @@ if TYPE_CHECKING:
     from flask_sqlalchemy import SQLAlchemy
 
 
+def test_route_question_get_empty_query(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
+    create_user(app, db)
+    credentials = {
+        'username': 'username123',
+        'password': 'password123'
+    }
+    response = client.post('/api/auth/sign-in', json=credentials)
+    token = response.get_json()['access_token']
+    headers = {
+        'cookie': f'access_token={token}'
+    }
+
+    create_test(app, db, 'title1', None,
+                datetime(2000,1,11,0,0,0),
+                datetime(2000,1,12,0,0,0))
+
+    create_question(app, db, 1, 'question text1',
+                AnswerTypeEnum.free_field,
+                [],
+                ['1703'])
+
+    response = client.get('/api/question', headers=headers)
+
+    assert response.status_code == 400
+    #assert response.get_json() == None
+
+def test_route_question_get_query_not_int(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
+    create_user(app, db)
+    credentials = {
+        'username': 'username123',
+        'password': 'password123'
+    }
+    response = client.post('/api/auth/sign-in', json=credentials)
+    token = response.get_json()['access_token']
+    headers = {
+        'cookie': f'access_token={token}'
+    }
+
+    create_test(app, db, 'title1', None,
+                datetime(2000,1,11,0,0,0),
+                datetime(2000,1,12,0,0,0))
+
+    create_question(app, db, 1, 'question text1',
+                AnswerTypeEnum.free_field,
+                [],
+                ['1703'])
+
+    response = client.get('/api/question?test_id=nn', headers=headers)
+
+    assert response.status_code == 400
+    #assert response.get_json() == None
+
+def test_route_question_get_test_doesnt_exist(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
+    create_user(app, db)
+    credentials = {
+        'username': 'username123',
+        'password': 'password123'
+    }
+    response = client.post('/api/auth/sign-in', json=credentials)
+    token = response.get_json()['access_token']
+    headers = {
+        'cookie': f'access_token={token}'
+    }
+
+    create_test(app, db, 'title1', None,
+                datetime(2000,1,11,0,0,0),
+                datetime(2000,1,12,0,0,0))
+
+    create_question(app, db, 1, 'question text1',
+                AnswerTypeEnum.free_field,
+                [],
+                ['1703'])
+
+    response = client.get('/api/question?test_id=10', headers=headers)
+
+    assert response.status_code == 400
+    #assert response.get_json() == None
+
 def test_route_question_get_uncompleted_test(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
     credentials = {
@@ -89,8 +167,22 @@ def test_route_question_get_completed_test(client: 'FlaskClient', app: 'Flask', 
 
     assert response.status_code == 200
     assert response.get_json() == [
-        { 'id': 1, 'test_id': 1, 'text': 'question text1', 'answer_type': 'free_field', 'show_answers': [], 'true_answers': ['1703'] },
-        { 'id': 2, 'test_id': 1, 'text': 'question text2', 'answer_type': 'one_select', 'show_answers': ['1', '2', '3'], 'true_answers': ['3'] }
+        {
+            'id': 1,
+            'test_id': 1,
+            'text': 'question text1',
+            'answer_type': 'free_field',
+            'show_answers': [],
+            'true_answers': ['1703']
+        },
+        {
+            'id': 2,
+            'test_id': 1,
+            'text': 'question text2',
+            'answer_type': 'one_select',
+            'show_answers': ['1', '2', '3'],
+            'true_answers': ['3']
+        }
     ]
 
 def test_route_question_get(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
