@@ -31,7 +31,7 @@ def test_route_complete_test(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchem
     completed_test_info = { 
         'test_id': 1,
     }
-    response = client.post('/api/completed-test', json=completed_test_info, headers=headers)
+    response = client.put('/api/completed-test', json=completed_test_info, headers=headers)
 
     assert response.status_code == 201
     assert response.get_json() is None
@@ -73,7 +73,7 @@ def test_route_complete_test_exist(client: 'FlaskClient', app: 'Flask', db: 'SQL
     completed_test_info = { 
         'test_id': 1,
     }
-    response = client.post('/api/completed-test', json=completed_test_info, headers=headers)
+    response = client.put('/api/completed-test', json=completed_test_info, headers=headers)
 
     assert response.status_code == 201
     assert response.get_json() is None

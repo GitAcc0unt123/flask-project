@@ -157,7 +157,7 @@ def test_route_question_answers_CREATE_or_update(client: 'FlaskClient', app: 'Fl
         'question_id': 1,
         'answer': ['1703']
     }
-    response = client.post('/api/question-answer', json=question_answer_info, headers=headers)
+    response = client.put('/api/question-answer', json=question_answer_info, headers=headers)
 
     assert response.status_code == 201
     assert response.get_json() is None
@@ -201,7 +201,7 @@ def test_route_question_answers_create_or_UPDATE(client: 'FlaskClient', app: 'Fl
         'question_id': 1,
         'answer': ['1703']
     }
-    response = client.post('/api/question-answer', json=question_answer_info, headers=headers)
+    response = client.put('/api/question-answer', json=question_answer_info, headers=headers)
 
     assert response.status_code == 201
     assert response.get_json() is None

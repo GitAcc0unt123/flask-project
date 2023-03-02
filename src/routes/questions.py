@@ -87,14 +87,11 @@ def update_question(id):
     input = request.json
     question = db.get_or_404(Question, id)
     try:
-        validated_input = QuestionSchema(exclude=['test_id'], partial=True).load(input)
-        if validated_input is None or len(validated_input) == 0:
-            raise BadRequest("empty input. fill at least one field")
-
+        validated_input = QuestionSchema().load(input)
         question.update(validated_input)
         question.verified = True
         db.session.commit()
-        return QuestionSchema(only=validated_input.keys()).dump(question)
+        return QuestionSchema().dump(question)
     except ValidationError as err:
         raise BadRequest(err.messages)
     except Exception as err:

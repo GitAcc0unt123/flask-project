@@ -27,7 +27,7 @@ def get_question_answers():
     except ValueError as err:
         raise BadRequest('incorrect test_id')
     except Exception as err:
-        logging.exception(str(err))
+        logging.exception(err)
         raise InternalServerError()
     
     if not test_exist:
@@ -45,33 +45,43 @@ def get_question_answers():
         result = QuestionAnswerSchema().dump(question_answers, many=True)
         return result
     except Exception as err:
-        logging.exception(str(err))
+        logging.exception(err)
         raise InternalServerError()
 
 
-@question_answer_bp.route('', methods=['POST'])
+@question_answer_bp.route('', methods=['PUT'])
 @jwt_required(locations=['cookies', 'headers'])
 def create_or_update_question_answer():
     input = request.json
     user_id = get_jwt_identity()
 
+    if 'question_id' not in input:
+        raise BadRequest()
+
     try:
-        validated_input = QuestionAnswerSchema(only=['question_id', 'answer']).load(input)
+        question_id = int(input['question_id'])
+        stmt = select(Question).where(Question.id == question_id)
+        question = db.session.execute(stmt).scalar_one_or_none()
+
+        input |= {'answer_type': question.answer_type.name, 'question_show_answers': question.show_answers}
+        validated_input = QuestionAnswerSchema().load(input)
         stmt = select(QuestionAnswer).where(and_(
                     QuestionAnswer.question_id == validated_input['question_id'],
                     QuestionAnswer.user_id == user_id))
         question_answer = db.session.execute(stmt).scalar_one_or_none()
 
         if question_answer is None:
-            question_answer = QuestionAnswer(**validated_input, user_id=user_id)
+            question_answer = QuestionAnswer(user_id, validated_input['question_id'], validated_input['answer'])
             db.session.add(question_answer)
         else:
             question_answer.update(validated_input)
             question_answer.verified = True
         db.session.commit()
         return Response(status=201)
+    except ValueError as err:
+        raise BadRequest()
     except ValidationError as err:
         raise BadRequest(err.messages)
     except Exception as err:
-        logging.exception(str(err))
+        logging.exception(err)
         raise InternalServerError()

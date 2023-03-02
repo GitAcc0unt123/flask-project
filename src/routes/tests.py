@@ -19,7 +19,7 @@ def get_all_tests():
         result = TestSchema(only=['id', 'title', 'description']).dump(tests, many=True)
         return result
     except Exception as err:
-        logging.exception(str(err))
+        logging.exception(err)
         raise InternalServerError()
 
 
@@ -37,7 +37,7 @@ def create_test():
     except ValidationError as err:
         raise BadRequest(err.messages)
     except Exception as err:
-        logging.exception(str(err))
+        logging.exception(err)
         raise InternalServerError()
 
 
@@ -48,7 +48,7 @@ def get_test_by_id(id):
     try:
         return TestSchema().dump(test)
     except Exception as err:
-        logging.exception(str(err))
+        logging.exception(err)
         raise InternalServerError()
 
 
@@ -57,25 +57,22 @@ def get_test_by_id(id):
 def update_test(id):
     input = request.json
     try:
-        validated_input = TestSchema(partial=True).load(input)
+        validated_input = TestSchema().load(input)
     except ValidationError as err:
         raise BadRequest(err.messages)
     except Exception as err:
-        logging.exception(str(err))
+        logging.exception(err)
         raise InternalServerError()
-
-    if validated_input is None or len(validated_input) == 0:
-        raise BadRequest("empty input. fill at least one field")
 
     test = db.get_or_404(Test, id)
     try:
         test.update(validated_input)
         test.verified = True
         db.session.commit()
-        response = TestSchema(only=validated_input.keys()).dump(test)
+        response = TestSchema().dump(test)
         return response
     except Exception as err:
-        logging.exception(str(err))
+        logging.exception(err)
         raise InternalServerError()
 
 
@@ -88,5 +85,5 @@ def delete_test(id):
         db.session.commit()
         return Response(status=204)
     except Exception as err:
-        logging.exception(str(err))
+        logging.exception(err)
         raise InternalServerError()

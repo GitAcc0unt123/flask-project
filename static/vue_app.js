@@ -297,7 +297,7 @@ const App = {
 
             const URL = '/api/question-answer'
             fetch(URL, {
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     'Authorization': this.access_token,
                     'Content-Type': 'application/json',
@@ -326,7 +326,7 @@ const App = {
 
             const URL = `/api/completed-test`
             fetch(URL, {
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     'Authorization': this.access_token,
                     'Content-Type': 'application/json',

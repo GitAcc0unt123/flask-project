@@ -13,7 +13,7 @@ from src.schemas import CompletedTestSchema
 completed_test_bp = Blueprint('completed_test', __name__)
 
 
-@completed_test_bp.route('', methods=['POST'])
+@completed_test_bp.route('', methods=['PUT'])
 @jwt_required(locations=['cookies', 'headers'])
 def complete_test():
     input = request.json
@@ -35,5 +35,5 @@ def complete_test():
     except ValidationError as err:
         raise BadRequest(err.messages)
     except Exception as err:
-        logging.exception(str(err))
+        logging.exception(err)
         raise InternalServerError()

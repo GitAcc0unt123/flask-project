@@ -281,24 +281,28 @@ def test_route_question_update_text(client: 'FlaskClient', app: 'Flask', db: 'SQ
                 [],
                 ['1703'])
     
-    update_question_info = { 
-        'text': 'new description'
+    update_question_info = {
+        'test_id': 1,
+        'text': 'new question text',
+        'answer_type': AnswerTypeEnum.free_field.name,
+        'show_answers': [],
+        'true_answers': ['1703']
     }
 
     response = client.put('/api/question/1', json=update_question_info, headers=headers)
 
     assert response.status_code == 200
-    assert response.get_json() == update_question_info
+    assert response.get_json() == update_question_info | {'id':1}
 
     with app.app_context():
         question = db.get_or_404(Question, 1)
         assert question is not None
         assert question.id == 1
-        assert question.test_id == 1
+        assert question.test_id == update_question_info['test_id']
         assert question.text == update_question_info['text']
-        assert question.answer_type == AnswerTypeEnum.free_field
-        assert question.show_answers == []
-        assert question.true_answers == ['1703']
+        assert question.answer_type.name == update_question_info['answer_type']
+        assert question.show_answers == update_question_info['show_answers']
+        assert question.true_answers == update_question_info['true_answers']
 
 def test_route_question_update_answer_bad_request(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
@@ -362,6 +366,7 @@ def test_route_question_update_answer(client: 'FlaskClient', app: 'Flask', db: '
                 ['1703'])
 
     update_question_info = {
+        'test_id': 1,
         'text': 'new description',
         'answer_type': AnswerTypeEnum.one_select.name,
         'show_answers': ['2014', '2015', '2016'],
@@ -371,7 +376,7 @@ def test_route_question_update_answer(client: 'FlaskClient', app: 'Flask', db: '
     response = client.put('/api/question/1', json=update_question_info, headers=headers)
 
     assert response.status_code == 200
-    assert response.get_json() == update_question_info
+    assert response.get_json() == update_question_info | {'id': 1}
 
     with app.app_context():
         question = db.get_or_404(Question, 1)
@@ -380,8 +385,8 @@ def test_route_question_update_answer(client: 'FlaskClient', app: 'Flask', db: '
         assert question.test_id == 1
         assert question.text == update_question_info['text']
         assert question.answer_type == AnswerTypeEnum.one_select
-        assert question.show_answers == ['2014', '2015', '2016']
-        assert question.true_answers == ['2016']
+        assert question.show_answers == update_question_info['show_answers']
+        assert question.true_answers == update_question_info['true_answers']
 
 def test_route_question_delete(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)

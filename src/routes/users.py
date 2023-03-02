@@ -22,7 +22,7 @@ def sign_in():
     except ValidationError as err:
         raise BadRequest(err.messages)
     except Exception as err:
-        logging.exception(str(err))
+        logging.exception(err)
         raise InternalServerError()
 
     user = User.authenticate(**validated_input)
@@ -58,7 +58,7 @@ def sign_up():
     except ValidationError as err:
         raise BadRequest(err.messages)
     except Exception as err:
-        logging.exception(type(err))
+        logging.exception(err)
         raise InternalServerError()
 
 
@@ -75,7 +75,7 @@ def refresh_access_token():
         set_access_cookies(response, ret['access_token'])
         return (response, 200)
     except Exception as err:
-        logging.exception(str(err))
+        logging.exception(err)
         raise InternalServerError()
 
 

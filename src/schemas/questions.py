@@ -51,5 +51,4 @@ class QuestionSchema(Schema):
         elif any(field in data for field in ('answer_type', 'show_answers', 'true_answers')):
             raise ValidationError(
                     'Required fields: answer_type, show_answers, true_answers',
-                    'answer_type, show_answers, true_answers'
                 )
