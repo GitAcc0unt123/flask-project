@@ -37,7 +37,7 @@ def test_route_complete_test(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchem
     assert response.get_json() is None
 
     with app.app_context():
-        stmt = select(CompletedTest).where(and_(CompletedTest.user_id==1, CompletedTest.test_id==1))
+        stmt = select(CompletedTest).where(and_(CompletedTest.user_id == 1, CompletedTest.test_id == 1))
         completed_test = db.session.execute(stmt).scalar_one_or_none()
         assert completed_test is not None
         assert completed_test.user_id == 1
@@ -63,7 +63,7 @@ def test_route_complete_test_exist(client: 'FlaskClient', app: 'Flask', db: 'SQL
     create_completed_test(app, db, 1, 1)
 
     with app.app_context():
-        stmt = select(CompletedTest).where(and_(CompletedTest.user_id==1, CompletedTest.test_id==1))
+        stmt = select(CompletedTest).where(and_(CompletedTest.user_id == 1, CompletedTest.test_id == 1))
         completed_test = db.session.execute(stmt).scalar_one_or_none()
         assert completed_test is not None
         assert completed_test.user_id == 1
@@ -79,7 +79,7 @@ def test_route_complete_test_exist(client: 'FlaskClient', app: 'Flask', db: 'SQL
     assert response.get_json() is None
 
     with app.app_context():
-        stmt = select(CompletedTest).where(and_(CompletedTest.user_id==1, CompletedTest.test_id==1))
+        stmt = select(CompletedTest).where(and_(CompletedTest.user_id == 1, CompletedTest.test_id == 1))
         completed_test_after_request = db.session.execute(stmt).scalar_one_or_none()
         assert completed_test.user_id == completed_test_after_request.user_id
         assert completed_test.test_id == completed_test_after_request.test_id

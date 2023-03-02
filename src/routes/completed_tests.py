@@ -22,8 +22,8 @@ def complete_test():
         validated_input = CompletedTestSchema(only=['test_id']).load(input)
 
         stmt = select(CompletedTest).where(and_(
-                CompletedTest.test_id==validated_input['test_id'],
-                CompletedTest.user_id==user_id)
+                CompletedTest.test_id == validated_input['test_id'],
+                CompletedTest.user_id == user_id)
         )
         completed_test = db.session.execute(stmt).scalar_one_or_none()
 

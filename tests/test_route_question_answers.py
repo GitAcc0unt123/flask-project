@@ -162,7 +162,7 @@ def test_route_question_answers_CREATE_or_update(client: 'FlaskClient', app: 'Fl
     assert response.status_code == 201
     assert response.get_json() is None
     with app.app_context():
-        stmt = select(QuestionAnswer).where(and_(QuestionAnswer.user_id==1, QuestionAnswer.question_id==1))
+        stmt = select(QuestionAnswer).where(and_(QuestionAnswer.user_id == 1, QuestionAnswer.question_id == 1))
         question_answer = db.session.execute(stmt).scalar_one_or_none()
         assert question_answer is not None
         assert question_answer.user_id == 1
@@ -190,7 +190,7 @@ def test_route_question_answers_create_or_UPDATE(client: 'FlaskClient', app: 'Fl
                 ['1703'])
     create_question_answer(app, db, 1, 1, ['1701'])
     with app.app_context():
-        stmt = select(QuestionAnswer).where(and_(QuestionAnswer.user_id==1, QuestionAnswer.question_id==1))
+        stmt = select(QuestionAnswer).where(and_(QuestionAnswer.user_id == 1, QuestionAnswer.question_id == 1))
         question_answer = db.session.execute(stmt).scalar_one_or_none()
         assert question_answer is not None
         assert question_answer.user_id == 1
@@ -207,7 +207,7 @@ def test_route_question_answers_create_or_UPDATE(client: 'FlaskClient', app: 'Fl
     assert response.get_json() is None
 
     with app.app_context():
-        stmt = select(QuestionAnswer).where(and_(QuestionAnswer.user_id==1, QuestionAnswer.question_id==1))
+        stmt = select(QuestionAnswer).where(and_(QuestionAnswer.user_id == 1, QuestionAnswer.question_id == 1))
         question_answer = db.session.execute(stmt).scalar_one_or_none()
         assert question_answer is not None
         assert question_answer.user_id == 1
