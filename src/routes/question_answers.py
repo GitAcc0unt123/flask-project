@@ -4,7 +4,7 @@ from flask import Blueprint, Response, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.exceptions import BadRequest, InternalServerError
 from marshmallow import ValidationError
-from sqlalchemy import select, and_
+from sqlalchemy import select, exists, and_
 
 from src.models import QuestionAnswer, Question, Test, db
 from src.schemas import QuestionAnswerSchema
@@ -16,23 +16,21 @@ question_answer_bp = Blueprint('question_answer', __name__)
 @question_answer_bp.route('', methods=['GET'])
 @jwt_required(locations=['cookies', 'headers'])
 def get_question_answers():
-    user_id = get_jwt_identity()
     test_id = request.args.get('test_id')
     if test_id is None:
         raise BadRequest('set test_id param in query string')
 
     try:
+        user_id = get_jwt_identity()
         test_id = int(test_id)
-        exists_criteria = select(1).where(Test.id == test_id).exists()
-        stmt = select(1).where(exists_criteria)
-        test_id_exist = db.session.execute(stmt).scalar_one_or_none()
+        test_exist = db.session.query(exists(1).where(Test.id == test_id)).scalar()
     except ValueError as err:
         raise BadRequest('incorrect test_id')
     except Exception as err:
         logging.exception(str(err))
         raise InternalServerError()
     
-    if test_id_exist is None:
+    if not test_exist:
         raise BadRequest('incorrect test_id')
     
     try:
@@ -40,7 +38,7 @@ def get_question_answers():
                 and_(
                     QuestionAnswer.user_id == user_id,
                     QuestionAnswer.question_id.in_(
-                        select(Question.id).where(Question.test_id==test_id)
+                        select(Question.id).where(Question.test_id == test_id)
                     )
             ))
         question_answers = db.session.execute(stmt).scalars().all()

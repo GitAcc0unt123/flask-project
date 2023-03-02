@@ -58,6 +58,81 @@ def test_route_get_question_answers(client: 'FlaskClient', app: 'Flask', db: 'SQ
     assert response_json[1]['question_id'] == 3
     assert response_json[1]['answer'] == ['1', '2']
 
+def test_route_question_answers_get_empty_query(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
+    create_user(app, db)
+    credentials = {
+        'username': 'username123',
+        'password': 'password123'
+    }
+    response = client.post('/api/auth/sign-in', json=credentials)
+    token = response.get_json()['access_token']
+    headers = {
+        'cookie': f'access_token={token}'
+    }
+
+    create_test(app, db, 'title1', None,
+                datetime(2000,1,11,0,0,0),
+                datetime(2000,1,12,0,0,0))
+    create_question(app, db, 1, 'question text1',
+                AnswerTypeEnum.free_field,
+                [],
+                ['1703'])
+    create_question_answer(app, db, 1, 1, ['1703'])
+
+    response = client.get('/api/question-answer', headers=headers)
+
+    assert response.status_code == 400
+
+def test_route_question_answers_get_query_not_int(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
+    create_user(app, db)
+    credentials = {
+        'username': 'username123',
+        'password': 'password123'
+    }
+    response = client.post('/api/auth/sign-in', json=credentials)
+    token = response.get_json()['access_token']
+    headers = {
+        'cookie': f'access_token={token}'
+    }
+
+    create_test(app, db, 'title1', None,
+                datetime(2000,1,11,0,0,0),
+                datetime(2000,1,12,0,0,0))
+    create_question(app, db, 1, 'question text1',
+                AnswerTypeEnum.free_field,
+                [],
+                ['1703'])
+    create_question_answer(app, db, 1, 1, ['1703'])
+
+    response = client.get('/api/question-answer?test_id=nn', headers=headers)
+
+    assert response.status_code == 400
+
+def test_route_question_answers_get_test_doesnt_exist(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
+    create_user(app, db)
+    credentials = {
+        'username': 'username123',
+        'password': 'password123'
+    }
+    response = client.post('/api/auth/sign-in', json=credentials)
+    token = response.get_json()['access_token']
+    headers = {
+        'cookie': f'access_token={token}'
+    }
+
+    create_test(app, db, 'title1', None,
+                datetime(2000,1,11,0,0,0),
+                datetime(2000,1,12,0,0,0))
+    create_question(app, db, 1, 'question text1',
+                AnswerTypeEnum.free_field,
+                [],
+                ['1703'])
+    create_question_answer(app, db, 1, 1, ['1703'])
+
+    response = client.get('/api/question-answer?test_id=10', headers=headers)
+
+    assert response.status_code == 400
+
 def test_route_question_answers_CREATE_or_update(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
     credentials = {
