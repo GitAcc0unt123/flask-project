@@ -207,7 +207,7 @@ const App = {
         },
 
         retrieveAllTests() {
-            fetch('/api/test', { method: 'GET'})
+            fetch('/api/tests', { method: 'GET'})
             .then(response => {
                 if (response.ok)
                     response.json().then(json => {
@@ -228,9 +228,9 @@ const App = {
             }
 
             (async () => {
-                const testDataPromise = fetch(`/api/test/${test_id}`)
+                const testDataPromise = fetch(`/api/tests/${test_id}`)
                 const questionsDataPromise = fetch(`/api/question-answer?test_id=${test_id}`)
-                const answersDataPromise = fetch(`/api/question?test_id=${test_id}`)
+                const answersDataPromise = fetch(`/api/tests/${test_id}/questions`)
 
                 const [testDataRes, answersDataRes, questionsDataRes] = await Promise.all([
                     testDataPromise,

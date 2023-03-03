@@ -12,58 +12,6 @@ if TYPE_CHECKING:
     from flask_sqlalchemy import SQLAlchemy
 
 
-def test_route_question_get_empty_query(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
-    create_user(app, db)
-    credentials = {
-        'username': 'username123',
-        'password': 'password123'
-    }
-    response = client.post('/api/auth/sign-in', json=credentials)
-    token = response.get_json()['access_token']
-    headers = {
-        'cookie': f'access_token={token}'
-    }
-
-    create_test(app, db, 'title1', None,
-                datetime(2000,1,11,0,0,0),
-                datetime(2000,1,12,0,0,0))
-
-    create_question(app, db, 1, 'question text1',
-                AnswerTypeEnum.free_field,
-                [],
-                ['1703'])
-
-    response = client.get('/api/question', headers=headers)
-
-    assert response.status_code == 400
-    #assert response.get_json() == None
-
-def test_route_question_get_query_not_int(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
-    create_user(app, db)
-    credentials = {
-        'username': 'username123',
-        'password': 'password123'
-    }
-    response = client.post('/api/auth/sign-in', json=credentials)
-    token = response.get_json()['access_token']
-    headers = {
-        'cookie': f'access_token={token}'
-    }
-
-    create_test(app, db, 'title1', None,
-                datetime(2000,1,11,0,0,0),
-                datetime(2000,1,12,0,0,0))
-
-    create_question(app, db, 1, 'question text1',
-                AnswerTypeEnum.free_field,
-                [],
-                ['1703'])
-
-    response = client.get('/api/question?test_id=nn', headers=headers)
-
-    assert response.status_code == 400
-    #assert response.get_json() == None
-
 def test_route_question_get_test_doesnt_exist(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
     credentials = {
@@ -85,9 +33,9 @@ def test_route_question_get_test_doesnt_exist(client: 'FlaskClient', app: 'Flask
                 [],
                 ['1703'])
 
-    response = client.get('/api/question?test_id=10', headers=headers)
+    response = client.get('/api/tests/10/questions', headers=headers)
 
-    assert response.status_code == 400
+    assert response.status_code == 404
     #assert response.get_json() == None
 
 def test_route_question_get_uncompleted_test(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
@@ -122,7 +70,7 @@ def test_route_question_get_uncompleted_test(client: 'FlaskClient', app: 'Flask'
                 ['1', '2', '4'],
                 ['2', '4'])
 
-    response = client.get('/api/question?test_id=1', headers=headers)
+    response = client.get('/api/tests/1/questions', headers=headers)
 
     assert response.status_code == 200
     assert response.get_json() == [
@@ -163,7 +111,7 @@ def test_route_question_get_completed_test(client: 'FlaskClient', app: 'Flask', 
                 ['2', '4'])
     create_completed_test(app, db, 1, 1)
 
-    response = client.get('/api/question?test_id=1', headers=headers)
+    response = client.get('/api/tests/1/questions', headers=headers)
 
     assert response.status_code == 200
     assert response.get_json() == [
@@ -211,16 +159,41 @@ def test_route_question_get(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy
                 ['1', '2', '3'],
                 ['3'])
 
-    response = client.get('/api/question/2', headers=headers)
+    response = client.get('/api/tests/1/questions/2', headers=headers)
 
     assert response.status_code == 200
-    assert response.get_json() == { 
+    assert response.get_json() == {
         'id': 2,
         'test_id': 1,
         'text': 'question text2',
         'answer_type': AnswerTypeEnum.one_select.name,
         'show_answers': ['1', '2', '3']
     }
+
+def test_route_question_create_test_doesnt_exist(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
+    create_user(app, db)
+    credentials = {
+        'username': 'username123',
+        'password': 'password123'
+    }
+    response = client.post('/api/auth/sign-in', json=credentials)
+    token = response.get_json()['access_token']
+    headers = {
+        'cookie': f'access_token={token}'
+    }
+
+    create_test(app, db, 'title1', None,
+                datetime(2000,1,10,0,0,0),
+                datetime(2000,1,11,0,0,0))
+
+    question_info = {
+        'text': 'question text2',
+        'answer_type': AnswerTypeEnum.one_select.name,
+        'show_answers': ['1', '2', '3'],
+        'true_answers': ['3']
+    }
+    response = client.post('/api/tests/10/questions', json=question_info, headers=headers)
+    assert response.status_code == 404
 
 def test_route_question_create(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
     create_user(app, db)
@@ -238,14 +211,13 @@ def test_route_question_create(client: 'FlaskClient', app: 'Flask', db: 'SQLAlch
                 datetime(2000,1,10,0,0,0),
                 datetime(2000,1,11,0,0,0))
 
-    question_info = { 
-        'test_id': 1,
+    question_info = {
         'text': 'question text2',
         'answer_type': AnswerTypeEnum.one_select.name,
         'show_answers': ['1', '2', '3'],
         'true_answers': ['3']
     }
-    response = client.post('/api/question', json=question_info, headers=headers)
+    response = client.post('/api/tests/1/questions', json=question_info, headers=headers)
 
     assert response.status_code == 201
     assert response.get_json() == { 'id': 1 }
@@ -282,23 +254,22 @@ def test_route_question_update_text(client: 'FlaskClient', app: 'Flask', db: 'SQ
                 ['1703'])
     
     update_question_info = {
-        'test_id': 1,
         'text': 'new question text',
         'answer_type': AnswerTypeEnum.free_field.name,
         'show_answers': [],
         'true_answers': ['1703']
     }
 
-    response = client.put('/api/question/1', json=update_question_info, headers=headers)
+    response = client.put('/api/tests/1/questions/1', json=update_question_info, headers=headers)
 
     assert response.status_code == 200
-    assert response.get_json() == update_question_info | {'id':1}
+    assert response.get_json() == update_question_info | {'id':1, 'test_id': 1}
 
     with app.app_context():
         question = db.get_or_404(Question, 1)
         assert question is not None
         assert question.id == 1
-        assert question.test_id == update_question_info['test_id']
+        assert question.test_id == 1
         assert question.text == update_question_info['text']
         assert question.answer_type.name == update_question_info['answer_type']
         assert question.show_answers == update_question_info['show_answers']
@@ -330,7 +301,7 @@ def test_route_question_update_answer_bad_request(client: 'FlaskClient', app: 'F
         'answer_type': AnswerTypeEnum.one_select.name
     }
 
-    response = client.put('/api/question/1', json=update_question_info, headers=headers)
+    response = client.put('/api/tests/1/questions/1', json=update_question_info, headers=headers)
 
     assert response.status_code == 400
 
@@ -366,17 +337,16 @@ def test_route_question_update_answer(client: 'FlaskClient', app: 'Flask', db: '
                 ['1703'])
 
     update_question_info = {
-        'test_id': 1,
         'text': 'new description',
         'answer_type': AnswerTypeEnum.one_select.name,
         'show_answers': ['2014', '2015', '2016'],
         'true_answers': ['2016']
     }
 
-    response = client.put('/api/question/1', json=update_question_info, headers=headers)
+    response = client.put('/api/tests/1/questions/1', json=update_question_info, headers=headers)
 
     assert response.status_code == 200
-    assert response.get_json() == update_question_info | {'id': 1}
+    assert response.get_json() == update_question_info | {'id': 1, 'test_id': 1}
 
     with app.app_context():
         question = db.get_or_404(Question, 1)
@@ -409,7 +379,7 @@ def test_route_question_delete(client: 'FlaskClient', app: 'Flask', db: 'SQLAlch
                 [],
                 ['1703'])
 
-    response = client.delete('/api/question/1', headers=headers)
+    response = client.delete('/api/tests/1/questions/1', headers=headers)
 
     assert response.status_code == 204
     assert response.get_json() is None

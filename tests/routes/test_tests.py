@@ -20,7 +20,7 @@ def test_route_test_get_all(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy
                 datetime(2000,1,1,0,0,0),
                 datetime(2000,1,12,0,0,0))
 
-    response = client.get('/api/test')
+    response = client.get('/api/tests')
 
     assert response.status_code == 200
     assert response.get_json() == [
@@ -47,7 +47,7 @@ def test_route_test_get(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'):
                 datetime(2000,1,1,0,0,0),
                 datetime(2000,1,12,0,0,0))
 
-    response = client.get('/api/test/1', headers=headers)
+    response = client.get('/api/tests/1', headers=headers)
 
     assert response.status_code == 200
     assert response.get_json() == { 
@@ -76,7 +76,7 @@ def test_route_test_create(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'
         'end': '2000-01-13 00:00:00'
     }
 
-    response = client.post('/api/test', json=test_info, headers=headers)
+    response = client.post('/api/tests', json=test_info, headers=headers)
 
     assert response.status_code == 201
     assert response.get_json() == { 'id': 1 }
@@ -110,7 +110,7 @@ def test_route_test_update_title(client: 'FlaskClient', app: 'Flask', db: 'SQLAl
         'title': 'new title',
     }
 
-    response = client.put('/api/test/1', json=update_test_info, headers=headers)
+    response = client.put('/api/tests/1', json=update_test_info, headers=headers)
 
     assert response.status_code == 400
 
@@ -146,7 +146,7 @@ def test_route_test_update_time_bad_request(client: 'FlaskClient', app: 'Flask',
         'end': datetime(2000,1,11,0,0,0)
     }
 
-    response = client.put('/api/test/1', json=update_test_info, headers=headers)
+    response = client.put('/api/tests/1', json=update_test_info, headers=headers)
 
     assert response.status_code == 400
 
@@ -182,7 +182,7 @@ def test_route_test_update_time(client: 'FlaskClient', app: 'Flask', db: 'SQLAlc
         'end': '2010-01-12 00:00:00'
     }
 
-    response = client.put('/api/test/1', json=update_test_info, headers=headers)
+    response = client.put('/api/tests/1', json=update_test_info, headers=headers)
 
     assert response.status_code == 200
     assert response.get_json() == {
@@ -222,7 +222,7 @@ def test_route_test_delete(client: 'FlaskClient', app: 'Flask', db: 'SQLAlchemy'
                 datetime(2000,1,1,0,0,0),
                 datetime(2000,1,12,0,0,0))
 
-    response = client.delete('/api/test/1', headers=headers)
+    response = client.delete('/api/tests/1', headers=headers)
 
     assert response.status_code == 204
     assert response.get_json() is None

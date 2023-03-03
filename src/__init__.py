@@ -16,9 +16,9 @@ def create_flask_app(config: 'Config') -> Flask:
     app.config.from_mapping(config)
 
     app.register_blueprint(user_bp, url_prefix='/api/auth')
-    app.register_blueprint(test_bp, url_prefix='/api/test')
+    app.register_blueprint(test_bp, url_prefix='/api/tests')
     app.register_blueprint(completed_test_bp, url_prefix='/api/completed-test')
-    app.register_blueprint(question_bp, url_prefix='/api/question')
+    app.register_blueprint(question_bp, url_prefix='/api')
     app.register_blueprint(question_answer_bp, url_prefix='/api/question-answer')
 
     JWTManager(app)
